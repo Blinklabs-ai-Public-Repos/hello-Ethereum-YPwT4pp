@@ -2,9 +2,10 @@
 pragma solidity ^0.8.20;
 
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Burnable.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
-contract ABCD is ERC20, Ownable {
+contract ABCD is ERC20, ERC20Burnable, Ownable {
     uint256 private immutable _maxSupply;
 
     /**
@@ -38,5 +39,26 @@ contract ABCD is ERC20, Ownable {
      */
     function maxSupply() public view returns (uint256) {
         return _maxSupply;
+    }
+
+    /**
+     * @dev Burns a specific amount of tokens from the caller's account
+     * @param amount The amount of tokens to burn
+     * @notice This function overrides the burn function from ERC20Burnable to add a check against max supply
+     */
+    function burn(uint256 amount) public override {
+        require(amount > 0, "Burn amount must be greater than zero");
+        super.burn(amount);
+    }
+
+    /**
+     * @dev Burns a specific amount of tokens from a specified account
+     * @param account The account to burn tokens from
+     * @param amount The amount of tokens to burn
+     * @notice This function overrides the burnFrom function from ERC20Burnable to add a check against max supply
+     */
+    function burnFrom(address account, uint256 amount) public override {
+        require(amount > 0, "Burn amount must be greater than zero");
+        super.burnFrom(account, amount);
     }
 }
